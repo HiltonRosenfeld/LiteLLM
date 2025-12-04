@@ -32,11 +32,13 @@ docker run \
     --config /app/config.yaml --detailed_debug
 ```
 
-### Make ChatCompletions Request to Proxy
+## Make ChatCompletions Request to Proxy
 
-```sh
+### Using Python
+
+```python
 import openai # openai v1.0.0+
-client = openai.OpenAI(api_key="anything",base_url="http://0.0.0.0:4000") # set proxy to base_url
+client = openai.OpenAI(api_key="your_litellm_api_key",base_url="http://0.0.0.0:4000") # set proxy to base_url
 response = client.chat.completions.create(model="gpt-4.1-mini", messages = [
     {
         "role": "user",
@@ -46,3 +48,34 @@ response = client.chat.completions.create(model="gpt-4.1-mini", messages = [
 
 print(response)
 ```
+
+### Using curl
+
+```sh
+curl -X POST 'http://0.0.0.0:4000/chat/completions' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer your_litellm_api_key' \
+-d ' {
+      "model": "gpt-4.1-mini",
+      "messages": [
+        {
+          "role": "user",
+          "content": "this is a test request, write a short poem"
+        }
+      ]
+    }
+'
+```
+
+## Langflow Component
+
+Import the file `LiteLLM.json` into your Langflow instance.
+
+The file includes a custopm component that works with LiteLLM.
+
+The componenet will automatically retreive the list of available models in your LiteLLM using the /models endpoint.
+
+You can define:
+
+- the LiteLLM Base URL - e.g. <http://127.0.0.1:4000/>
+- the LiteLLM API Key - this is only required if configured in your LiteLLM instance.
